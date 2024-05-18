@@ -1,0 +1,8 @@
+name: helicopter
+version: '${version}'
+main: com.breakpointinteractive.helicopter.Helicopter
+api-version: '1.20'
+depend: [packetevents]
+commands:
+  helicopter:
+    permission: helicopter.all
