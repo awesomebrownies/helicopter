@@ -1,16 +1,16 @@
 package com.breakpointinteractive.helicopter;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Interaction;
-import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -25,6 +25,7 @@ public class ActiveHelicopter {
     private double rotorYRotation;
     private float rpm = 0;
     private Entity[] entitiesBase;
+    private final Vector2f playerRotation = new Vector2f(0,0);
 
     public ActiveHelicopter(Entity helicopterBase){
         entitiesBase = new Entity[helicopterBase.getPassengers().size()];
@@ -50,17 +51,39 @@ public class ActiveHelicopter {
         body.customName(Component.text("helicopter"));
         activeHelicopters.put(body.getEntityId(), this);
 
-        ItemDisplay rotor = initializePart(attackAngle, location, Material.RABBIT_FOOT, new Vector(0, 4.5, -4));
+        ItemDisplay rotor = initializePart(attackAngle, location, Material.RABBIT_FOOT, new Vector(-0.53f, 3.25f, -4f));
+
+        TextDisplay display = initializeDisplay(attackAngle, location, new Vector(0.25, 0.9, -1.1));
 
         Interaction hitbox = (Interaction) location.getWorld().spawnEntity(location, EntityType.INTERACTION);
         hitbox.setInteractionHeight(3);
         hitbox.setInteractionWidth(4);
         hitbox.setResponsive(true);
 
-        entitiesBase = new Entity[] { body, rotor, hitbox };
+        entitiesBase = new Entity[] { body, rotor, display, hitbox };
 
         body.addPassenger(rotor);
+        body.addPassenger(display);
         body.addPassenger(hitbox);
+    }
+
+    private TextDisplay initializeDisplay(Quaternionf attackAngle, Location location, Vector offset){
+        TextDisplay display = (TextDisplay) location.getWorld().spawnEntity(location, EntityType.TEXT_DISPLAY);
+
+        Transformation displayTransformation = display.getTransformation();
+        attackAngle.rotateY((float) Math.toRadians(180));
+        displayTransformation.getLeftRotation().set(attackAngle);
+        Vector3f rotatedOffset = attackAngle.transformUnit(new Vector3f((float) offset.getX(), (float) offset.getY(), (float) offset.getZ()));
+
+        displayTransformation.getTranslation().set(rotatedOffset.x, rotatedOffset.y, rotatedOffset.z);
+        displayTransformation.getScale().set(0.25,0.25,0.25);
+        display.setTransformation(displayTransformation);
+
+        display.setShadowed(true);
+        display.text(Component.text("--0%").color(TextColor.color(20,255,40)));
+        display.setBackgroundColor(Color.fromARGB(0));
+
+        return display;
     }
 
     //helper function to spawning in helicopter parts
@@ -112,6 +135,9 @@ public class ActiveHelicopter {
     }
     public void setCollective(int newCollective){
         collective = newCollective;
+    }
+    public Vector2f getPlayerRotation(){
+        return playerRotation;
     }
     public static HashMap<Integer, ActiveHelicopter> getActiveHelicopters(){
         return activeHelicopters;

@@ -35,8 +35,8 @@ public class CameraHandler implements Listener {
                     float xDifference = (float) queuedShiftAmount.get(player).getX();
                     float yDifference = (float) queuedShiftAmount.get(player).getY();
 
-                    xDifference = (xDifference < 0 ? -1 : 1) * Math.max(0, Math.min(1, Math.abs(xDifference)));
-                    yDifference = (yDifference < 0 ? -1 : 1) * Math.max(0, Math.min(1, Math.abs(yDifference)));
+                    xDifference = (xDifference < 0 ? -1 : 1) * Math.max(0, Math.min(0.2f, Math.abs(xDifference)));
+                    yDifference = (yDifference < 0 ? -1 : 1) * Math.max(0, Math.min(0.2f, Math.abs(yDifference)));
 
                     WrapperPlayServerPlayerPositionAndLook positionAndLook =
                         new WrapperPlayServerPlayerPositionAndLook(0, 0, 0, yDifference,

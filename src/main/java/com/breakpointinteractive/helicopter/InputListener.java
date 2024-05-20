@@ -5,11 +5,17 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSteerVehicle;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+import org.joml.Vector2f;
 
 import java.util.Objects;
 
@@ -17,7 +23,8 @@ public class InputListener implements Listener, PacketListener {
     @EventHandler
     public void onRightClick(PlayerInteractAtEntityEvent event){
         if(event.getRightClicked().getVehicle() != null
-                && Objects.equals(event.getRightClicked().getVehicle().customName(), Component.text("helicopter"))){
+                && Objects.equals(event.getRightClicked().getVehicle().customName(), Component.text("helicopter"))
+                && event.getRightClicked().getVehicle().getPassengers().size() != 4){
             Player player = event.getPlayer();
 
             ItemDisplay helicopter = (ItemDisplay) event.getRightClicked().getVehicle();
@@ -34,11 +41,40 @@ public class InputListener implements Listener, PacketListener {
                 WrapperPlayClientSteerVehicle packet = new WrapperPlayClientSteerVehicle(event);
 
                 ActiveHelicopter helicopter = ActiveHelicopter.getActiveHelicopters().get(player.getVehicle().getEntityId());
+                if(helicopter != null && packet.getSideways() != 0){
+                    helicopter.getPlayerRotation().y += Math.round(packet.getSideways());
+                    CameraHandler.getQueuedShiftAmount().put(player, CameraHandler.getQueuedShiftAmount().getOrDefault(player, new Vector(0,0,0)).add(new Vector(0,Math.round(-packet.getSideways()), 0)));
+                }
+
                 //limit values from 0 to 100 for collective percentage
-                if(helicopter != null){
-                    helicopter.setCollective(Math.min(100, Math.max(0, helicopter.getCollective()+Math.round(packet.getForward()))));
+                if(helicopter != null && packet.getForward() != 0){
+                    TextDisplay display = (TextDisplay) helicopter.getEntitiesBase()[2];
+                    updateCollective(helicopter, display, Math.min(100, Math.max(0, helicopter.getCollective()+Math.round(packet.getForward()))));
+
+                    final int prevCollective = helicopter.getCollective();
+                    new BukkitRunnable(){
+                        public void run(){
+                            if(prevCollective < helicopter.getCollective()){
+                                updateCollective(helicopter, display, Math.min(100, helicopter.getCollective()+(helicopter.getCollective()-prevCollective)));
+                            }else if(prevCollective > helicopter.getCollective()){
+                                updateCollective(helicopter, display, Math.max(0, helicopter.getCollective()+(helicopter.getCollective()-prevCollective)));
+                            }
+                        }
+                    }.runTaskLater(Helicopter.getInstance(), 2L);
                 }
             }
         }
+    }
+
+    private void updateCollective(ActiveHelicopter helicopter, TextDisplay display, int collective){
+        helicopter.setCollective(collective);
+        String underscores = "";
+        if(helicopter.getCollective() < 100){
+            underscores += "_";
+            if(helicopter.getCollective() < 10){
+                underscores += "_";
+            }
+        }
+        display.text(Component.text(underscores + (helicopter.getCollective() == 0 ? "_" : helicopter.getCollective()) + "%").color(TextColor.color(150,255,150)));
     }
 }
