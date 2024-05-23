@@ -87,7 +87,7 @@ publishing {
 
 tasks.register<Copy>("exportToLocalServer") {
     from(tasks.named("reobfJar"))
-    into("/home/user/Documents/GitHub/helicopter/server/plugins")
+    into("./server/plugins")
 }
 tasks.named("build") {
     dependsOn(tasks.named("exportToLocalServer"))

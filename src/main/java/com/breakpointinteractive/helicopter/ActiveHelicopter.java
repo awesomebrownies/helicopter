@@ -26,6 +26,7 @@ public class ActiveHelicopter {
     private float rpm = 0;
     private Entity[] entitiesBase;
     private final Vector2f playerRotation = new Vector2f(0,0);
+    private final CollisionBox[] collisionBoxes = new CollisionBox[1];
 
     public ActiveHelicopter(Entity helicopterBase){
         entitiesBase = new Entity[helicopterBase.getPassengers().size()];
@@ -138,6 +139,9 @@ public class ActiveHelicopter {
     }
     public Vector2f getPlayerRotation(){
         return playerRotation;
+    }
+    public CollisionBox[] getCollisionBoxes(){
+        return collisionBoxes;
     }
     public static HashMap<Integer, ActiveHelicopter> getActiveHelicopters(){
         return activeHelicopters;

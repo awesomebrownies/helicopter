@@ -6,7 +6,8 @@ import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.RelativeMovement;
-import org.bukkit.Bukkit;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.entity.Entity;
@@ -14,6 +15,7 @@ import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.Math;
@@ -23,8 +25,8 @@ import org.joml.Vector3f;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class Physics {
     public static void simulateHelicopter(ActiveHelicopter helicopter){
@@ -39,14 +41,11 @@ public class Physics {
         new BukkitRunnable(){
             @Override
             public void run(){
-                if(helicopter == null || helicopter.getEntitiesBase()[0].getPassengers().size() != 4){
+                if(helicopter.getEntitiesBase()[0].getPassengers().size() != 4){
                     cancel();
-                    assert helicopter != null;
                     ActiveHelicopter.getActiveHelicopters().remove(helicopter.getEntitiesBase()[0].getEntityId());
                     return;
                 }
-
-                //simulateRotors(helicopter);
 
                 handlePlayerRotation(helicopter, player, helicopter.getPlayerRotation());
 
@@ -75,6 +74,37 @@ public class Physics {
                 PacketEvents.getAPI().getPlayerManager().sendPacket(player, positionRotationInterpolation);
             }
         }
+
+        HashSet<Vector3f> blockLocation = new HashSet<>();
+        CollisionBox defaultBox = new CollisionBox(new Vector3f(-1,-1,2), new Vector3f(2,3,-5));
+
+        CollisionBox collisionBox = new CollisionBox(new Vector3f(-1,-1,2), new Vector3f(2,3,-5));
+        collisionBox.transformUnit(bodyRotation);
+
+        Vector3f helicopterMovementVector = helicopter.getVelocity().toVector3f();
+
+        LinkedList<Vector3f> list = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation(), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
+        blockLocation.addAll(list);
+
+        World world = helicopter.getEntitiesBase()[0].getLocation().getWorld();
+
+        Vector3f upVector = CollisionBox.getTopVector(bodyRotation);
+        Vector3f rightVector = CollisionBox.getRightVector(bodyRotation);
+        Vector3f forwardVector = CollisionBox.getForwardVector(bodyRotation);
+
+        for(Vector3f blockVector : blockLocation){
+            Location location = new Location(world, blockVector.x(), blockVector.y(), blockVector.z());
+            Block block = world.getBlockAt(location);
+            if(block.getType() != Material.AIR){
+                    RayTraceResult rayTrace = block.rayTrace(location, Vector.fromJOML(forwardVector), 2, FluidCollisionMode.ALWAYS);
+                    assert rayTrace != null;
+                    Vector finalVector = rayTrace.getHitPosition().subtract(location.toVector());
+                    helicopter.getVelocity().setX(finalVector.getX());
+                    helicopter.getVelocity().setY(finalVector.getY());
+                    helicopter.getVelocity().setZ(finalVector.getZ());
+                }
+        }
+
         CraftEntity craftEntity = (CraftEntity) body;
         craftEntity.getHandle().teleportTo(((CraftWorld) body.getLocation().getWorld()).getHandle(),
                 body.getX() + helicopter.getVelocity().getX()/20,
