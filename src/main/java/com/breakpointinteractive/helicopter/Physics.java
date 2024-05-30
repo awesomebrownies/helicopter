@@ -41,14 +41,15 @@ public class Physics {
         new BukkitRunnable(){
             @Override
             public void run(){
-                if(helicopter.getEntitiesBase()[0].getPassengers().size() != 4){
+                if(helicopter.getEntitiesBase()[0].getPassengers().size() != 4 && helicopter.getIsGrounded()){
                     cancel();
                     ActiveHelicopter.getActiveHelicopters().remove(helicopter.getEntitiesBase()[0].getEntityId());
                     return;
                 }
 
-                handlePlayerRotation(helicopter, player, helicopter.getPlayerRotation());
-
+                if(helicopter.getEntitiesBase()[0].getPassengers().size() == 4){
+                    handlePlayerRotation(helicopter, player, helicopter.getPlayerRotation());
+                }
                 simulatePhysics(helicopter);
 
             }
@@ -62,12 +63,12 @@ public class Physics {
         Quaternionf bodyRotation = body.getTransformation().getLeftRotation();
         Vector3f direction = new Vector3f(0, 1, 0);
         bodyRotation.transformUnit(direction);
-        direction.mul((float) helicopter.getCollective()/120);
+        direction.mul((float) helicopter.getCollective()/2400);
 
-        helicopter.getVelocity().add(Vector.fromJOML(direction)).subtract(new Vector(0, 9.8/20, 0));
-        helicopter.getVelocity().setX(Math.max(-20, Math.min(20, helicopter.getVelocity().getX()))*0.995);
-        helicopter.getVelocity().setY(Math.max(-20, Math.min(20, helicopter.getVelocity().getY()))*0.995);
-        helicopter.getVelocity().setZ(Math.max(-20, Math.min(20, helicopter.getVelocity().getZ()))*0.995);
+        helicopter.getVelocity().add(Vector.fromJOML(direction)).subtract(new Vector(0, 9.8/400, 0));
+        helicopter.getVelocity().setX(Math.max(-1, Math.min(1, helicopter.getVelocity().getX()))*0.995);
+        helicopter.getVelocity().setY(Math.max(-1, Math.min(1, helicopter.getVelocity().getY()))*0.995);
+        helicopter.getVelocity().setZ(Math.max(-1, Math.min(1, helicopter.getVelocity().getZ()))*0.995);
         WrapperPlayServerEntityMetadata positionRotationInterpolation = new WrapperPlayServerEntityMetadata(body.getEntityId(), List.of(new EntityData(10, EntityDataTypes.INT, 1)));
         for(Player player : Bukkit.getOnlinePlayers()) {
             if (player.getLocation().distanceSquared(body.getLocation()) < body.getViewRange() * body.getViewRange()) {
@@ -76,14 +77,14 @@ public class Physics {
         }
 
         HashSet<Vector3f> blockLocation = new HashSet<>();
-        CollisionBox defaultBox = new CollisionBox(new Vector3f(-1,-1,2), new Vector3f(2,3,-5));
+        CollisionBox defaultBox = new CollisionBox(new Vector3f(-1.5f,-1,2), new Vector3f(1.5f,3,-5));
 
-        CollisionBox collisionBox = new CollisionBox(new Vector3f(-1,-1,2), new Vector3f(2,3,-5));
+        CollisionBox collisionBox = new CollisionBox(new Vector3f(-1.5f,-1,2), new Vector3f(1.5f,3,-5));
         collisionBox.transformUnit(bodyRotation);
 
         Vector3f helicopterMovementVector = helicopter.getVelocity().toVector3f();
 
-        LinkedList<Vector3f> list = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation(), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
+        LinkedList<Vector3f> list = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation().add(Vector.fromJOML(collisionBox.getLeftBottomForward())), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
         blockLocation.addAll(list);
 
         World world = helicopter.getEntitiesBase()[0].getLocation().getWorld();
@@ -92,24 +93,48 @@ public class Physics {
         Vector3f rightVector = CollisionBox.getRightVector(bodyRotation);
         Vector3f forwardVector = CollisionBox.getForwardVector(bodyRotation);
 
+        Vector nudge = new Vector();
+
+        boolean isGrounded = false;
         for(Vector3f blockVector : blockLocation){
             Location location = new Location(world, blockVector.x(), blockVector.y(), blockVector.z());
-            Block block = world.getBlockAt(location);
-            if(block.getType() != Material.AIR){
-                    RayTraceResult rayTrace = block.rayTrace(location, Vector.fromJOML(forwardVector), 2, FluidCollisionMode.ALWAYS);
-                    assert rayTrace != null;
+            Block block = world.getBlockAt(location.add(helicopter.getVelocity()).add(nudge));
+            if(block.getType().isSolid() && !helicopter.getVelocity().isZero()){
+                isGrounded = true;
+
+                Location rayTracePosition = location.clone().subtract(helicopter.getVelocity().clone().normalize());
+
+                RayTraceResult rayTrace = block.rayTrace(rayTracePosition,
+                        helicopter.getVelocity(), 2, FluidCollisionMode.NEVER);
+                if(rayTrace != null && rayTracePosition.getBlock() != block){
                     Vector finalVector = rayTrace.getHitPosition().subtract(location.toVector());
-                    helicopter.getVelocity().setX(finalVector.getX());
-                    helicopter.getVelocity().setY(finalVector.getY());
-                    helicopter.getVelocity().setZ(finalVector.getZ());
+                    if(Math.abs(helicopter.getVelocity().getX()+finalVector.getX()) < helicopter.getVelocity().getX() ){
+                        helicopter.getVelocity().setX(helicopter.getVelocity().getX()+finalVector.getX());
+                    }else{
+                        nudge.setX(nudge.getX()+finalVector.getX());
+                    }
+                    if(Math.abs(helicopter.getVelocity().getY()+finalVector.getY()) < helicopter.getVelocity().getY() ){
+                        helicopter.getVelocity().setY(helicopter.getVelocity().getY()+finalVector.getY());
+                    }else{
+                        nudge.setY(nudge.getY()+finalVector.getY());
+                    }
+
+                    if(Math.abs(helicopter.getVelocity().getZ()+finalVector.getZ()) < helicopter.getVelocity().getZ() ){
+                        helicopter.getVelocity().setZ(helicopter.getVelocity().getZ()+finalVector.getZ());
+                    }else{
+                        nudge.setZ(nudge.getZ()+finalVector.getZ());
+                    }
                 }
+            }
         }
+
+        helicopter.setIsGrounded(isGrounded);
 
         CraftEntity craftEntity = (CraftEntity) body;
         craftEntity.getHandle().teleportTo(((CraftWorld) body.getLocation().getWorld()).getHandle(),
-                body.getX() + helicopter.getVelocity().getX()/20,
-                body.getY() + helicopter.getVelocity().getY()/20,
-                body.getZ() + helicopter.getVelocity().getZ()/20, Collections.emptySet(), 0, 0);
+                body.getX() + helicopter.getVelocity().getX() + nudge.getX(),
+                body.getY() + helicopter.getVelocity().getY() + nudge.getY(),
+                body.getZ() + helicopter.getVelocity().getZ() + nudge.getZ(), Collections.emptySet(), 0, 0);
     }
 
     private static void handlePlayerRotation(ActiveHelicopter helicopter, Player player, Vector2f playerRotation){

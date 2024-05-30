@@ -1,9 +1,6 @@
 package com.breakpointinteractive.helicopter;
 
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -31,6 +28,10 @@ public class CollisionBox {
         return (int) (rightTopBackward.z()-leftBottomForward.z());
     }
 
+    public Vector3f getLeftBottomForward(){
+        return leftBottomForward;
+    }
+
     public LinkedList<Vector3f> getForwardFace(Location location, Quaternionf quaternion, int height, int width){
         LinkedList<Vector3f> linkedList = new LinkedList<>();
 
@@ -41,10 +42,9 @@ public class CollisionBox {
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
                 Location newLocation = location.clone()
-                        .add(Vector.fromJOML(upVector.mul(i)))
-                        .add(Vector.fromJOML(rightVector.mul(j))
-                                .subtract(Vector.fromJOML(forwardVector)));
-                linkedList.add(new Vector3f((float) newLocation.getBlockX(), (float)newLocation.getBlockY(), (float)newLocation.getBlockZ()));
+                        .add(Vector.fromJOML(upVector).multiply(i))
+                        .add(Vector.fromJOML(rightVector).multiply(j));
+                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
             }
         }
 

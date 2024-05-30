@@ -7,10 +7,14 @@
   },
   "minecraft:adventure/adventuring_time": {
     "criteria": {
+      "minecraft:badlands": "2024-05-24 19:42:38 -0400",
       "minecraft:desert": "2024-05-15 09:35:41 -0400",
+      "minecraft:mangrove_swamp": "2024-05-23 20:02:48 -0400",
       "minecraft:river": "2024-05-17 20:54:35 -0400",
       "minecraft:lush_caves": "2024-05-17 12:59:02 -0400",
       "minecraft:dripstone_caves": "2024-05-17 21:46:30 -0400",
+      "minecraft:wooded_badlands": "2024-05-24 20:18:27 -0400",
+      "minecraft:windswept_savanna": "2024-05-24 21:22:29 -0400",
       "minecraft:warm_ocean": "2024-05-21 09:45:09 -0400"
     },
     "done": false

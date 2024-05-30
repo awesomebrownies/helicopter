@@ -27,6 +27,7 @@ public class ActiveHelicopter {
     private Entity[] entitiesBase;
     private final Vector2f playerRotation = new Vector2f(0,0);
     private final CollisionBox[] collisionBoxes = new CollisionBox[1];
+    private boolean isGrounded;
 
     public ActiveHelicopter(Entity helicopterBase){
         entitiesBase = new Entity[helicopterBase.getPassengers().size()];
@@ -41,6 +42,7 @@ public class ActiveHelicopter {
     public ActiveHelicopter(Quaternionf attackAngle, Location location){
         this.attackAngle = attackAngle; //starting rotation
         initializeParts(attackAngle, location);
+        Physics.simulateHelicopter(this);
     }
 
     public void initializeParts(Quaternionf attackAngle, Location location){
@@ -130,6 +132,12 @@ public class ActiveHelicopter {
     }
     public double getRPM(){
         return rpm;
+    }
+    public void setIsGrounded(boolean statement){
+        isGrounded = statement;
+    }
+    public boolean getIsGrounded(){
+        return isGrounded;
     }
     public int getCollective(){
         return collective;
