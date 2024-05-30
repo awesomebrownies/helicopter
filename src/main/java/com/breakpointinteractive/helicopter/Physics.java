@@ -63,12 +63,22 @@ public class Physics {
         Quaternionf bodyRotation = body.getTransformation().getLeftRotation();
         Vector3f direction = new Vector3f(0, 1, 0);
         bodyRotation.transformUnit(direction);
-        direction.mul((float) helicopter.getCollective()/2400);
+        direction.mul((float) (helicopter.getCollective()/2400.));
 
         helicopter.getVelocity().add(Vector.fromJOML(direction)).subtract(new Vector(0, 9.8/400, 0));
-        helicopter.getVelocity().setX(Math.max(-1, Math.min(1, helicopter.getVelocity().getX()))*0.995);
-        helicopter.getVelocity().setY(Math.max(-1, Math.min(1, helicopter.getVelocity().getY()))*0.995);
-        helicopter.getVelocity().setZ(Math.max(-1, Math.min(1, helicopter.getVelocity().getZ()))*0.995);
+
+        //max is 20 meters per second total combined magnitude
+        double x = helicopter.getVelocity().getX();
+        double y = helicopter.getVelocity().getY();
+        double z = helicopter.getVelocity().getZ();
+        double combined = x*x + y*y + z*z;
+        if(combined > 400){ //if exceeding the maximum speed, multiply vector by inverse square root to normalize
+            double inverseSquareRoot = invSqrt(combined);
+            helicopter.getVelocity().setX(helicopter.getVelocity().getX()*inverseSquareRoot*20);
+            helicopter.getVelocity().setY(helicopter.getVelocity().getY()*inverseSquareRoot*20);
+            helicopter.getVelocity().setZ(helicopter.getVelocity().getZ()*inverseSquareRoot*20);
+        }
+
         WrapperPlayServerEntityMetadata positionRotationInterpolation = new WrapperPlayServerEntityMetadata(body.getEntityId(), List.of(new EntityData(10, EntityDataTypes.INT, 1)));
         for(Player player : Bukkit.getOnlinePlayers()) {
             if (player.getLocation().distanceSquared(body.getLocation()) < body.getViewRange() * body.getViewRange()) {
@@ -84,7 +94,8 @@ public class Physics {
 
         Vector3f helicopterMovementVector = helicopter.getVelocity().toVector3f();
 
-        LinkedList<Vector3f> list = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation().add(Vector.fromJOML(collisionBox.getLeftBottomForward())), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
+        LinkedList<Vector3f> list = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation()
+                .add(Vector.fromJOML(collisionBox.getLeftBottomForward())), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
         blockLocation.addAll(list);
 
         World world = helicopter.getEntitiesBase()[0].getLocation().getWorld();
@@ -102,28 +113,51 @@ public class Physics {
             if(block.getType().isSolid() && !helicopter.getVelocity().isZero()){
                 isGrounded = true;
 
-                Location rayTracePosition = location.clone().subtract(helicopter.getVelocity().clone().normalize());
+                Location rayTracePosition = location.clone().subtract(helicopter.getVelocity().clone().normalize().multiply(0.5));
 
                 RayTraceResult rayTrace = block.rayTrace(rayTracePosition,
                         helicopter.getVelocity(), 2, FluidCollisionMode.NEVER);
-                if(rayTrace != null && rayTracePosition.getBlock() != block){
-                    Vector finalVector = rayTrace.getHitPosition().subtract(location.toVector());
-                    if(Math.abs(helicopter.getVelocity().getX()+finalVector.getX()) < helicopter.getVelocity().getX() ){
-                        helicopter.getVelocity().setX(helicopter.getVelocity().getX()+finalVector.getX());
-                    }else{
-                        nudge.setX(nudge.getX()+finalVector.getX());
+                //additional check: if there is a solid block after adding the face vector and retrieving,
+                //then raycast by that instead
+                if(rayTrace != null){
+                    Block newBlock = block.getLocation().add(rayTrace.getHitBlockFace().getDirection()).getBlock();
+                    if(newBlock.isSolid()){
+                        rayTrace = newBlock.rayTrace(rayTracePosition,
+                                helicopter.getVelocity(), 2, FluidCollisionMode.NEVER);
+                        block = newBlock;
                     }
-                    if(Math.abs(helicopter.getVelocity().getY()+finalVector.getY()) < helicopter.getVelocity().getY() ){
-                        helicopter.getVelocity().setY(helicopter.getVelocity().getY()+finalVector.getY());
-                    }else{
-                        nudge.setY(nudge.getY()+finalVector.getY());
-                    }
+                }
 
-                    if(Math.abs(helicopter.getVelocity().getZ()+finalVector.getZ()) < helicopter.getVelocity().getZ() ){
-                        helicopter.getVelocity().setZ(helicopter.getVelocity().getZ()+finalVector.getZ());
-                    }else{
-                        nudge.setZ(nudge.getZ()+finalVector.getZ());
-                    }
+                if(rayTrace != null && rayTracePosition.getBlock() != block){ //to make sure the raytrace isn't inside the block
+                    Vector finalVector = rayTrace.getHitPosition().subtract(location.toVector());
+//                    if(Math.abs(helicopter.getVelocity().getX()+finalVector.getX()) < helicopter.getVelocity().getX() ){
+//                        helicopter.getVelocity().setX(helicopter.getVelocity().getX()+finalVector.getX());
+//                    }else{
+//                    }
+                    nudge.setX(nudge.getX()+finalVector.getX()+helicopter.getVelocity().getX());
+                    //if(nudge.getX() != 0){
+                        helicopter.getVelocity().setX(0);
+                    //}
+
+
+//                    if(Math.abs(helicopter.getVelocity().getY()+finalVector.getY()) < helicopter.getVelocity().getY() ){
+//                        helicopter.getVelocity().setY(helicopter.getVelocity().getY()+finalVector.getY());
+//                    }else{
+//                    }
+                    nudge.setY(nudge.getY()+finalVector.getY()+helicopter.getVelocity().getY());
+                    //if(nudge.getY() == 0){
+                        helicopter.getVelocity().setY(0);
+                    //}
+
+
+//                    if(Math.abs(helicopter.getVelocity().getZ()+finalVector.getZ()) < helicopter.getVelocity().getZ() ){
+//                        helicopter.getVelocity().setZ(helicopter.getVelocity().getZ()+finalVector.getZ());
+//                    }else{
+//                    }
+                    nudge.setZ(nudge.getZ()+finalVector.getZ()+helicopter.getVelocity().getZ());
+                    //if(nudge.getZ() == 0){
+                        helicopter.getVelocity().setZ(0);
+                    //}
                 }
             }
         }
@@ -136,6 +170,18 @@ public class Physics {
                 body.getY() + helicopter.getVelocity().getY() + nudge.getY(),
                 body.getZ() + helicopter.getVelocity().getZ() + nudge.getZ(), Collections.emptySet(), 0, 0);
     }
+
+    //https://stackoverflow.com/questions/11513344/how-to-implement-the-fast-inverse-square-root-in-java
+    //originally from Quake III, converted over from C to java
+    public static double invSqrt(double x) {
+        double xhalf = 0.5d * x;
+        long i = Double.doubleToLongBits(x);
+        i = 0x5fe6ec85e7de30daL - (i >> 1);
+        x = Double.longBitsToDouble(i);
+        x *= (1.5d - xhalf * x * x);
+        return x;
+    }
+
 
     private static void handlePlayerRotation(ActiveHelicopter helicopter, Player player, Vector2f playerRotation){
         //get difference between yaw of player and y axis of helicopter

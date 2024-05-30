@@ -1,9 +1,11 @@
 package com.breakpointinteractive.helicopter;
 
+import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSteerVehicle;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerPositionAndLook;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.ItemDisplay;
@@ -14,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.joml.Vector3f;
 
 import java.util.Objects;
 
@@ -27,6 +30,14 @@ public class InputListener implements Listener, PacketListener {
 
             ItemDisplay helicopter = (ItemDisplay) event.getRightClicked().getVehicle();
             helicopter.addPassenger(player);
+
+            Vector3f eulerAngles = new Vector3f();
+            helicopter.getTransformation().getLeftRotation().getEulerAnglesYXZ(eulerAngles);
+
+            WrapperPlayServerPlayerPositionAndLook positionAndLook =
+                    new WrapperPlayServerPlayerPositionAndLook(0,0,0,
+                            (float) Math.toDegrees(eulerAngles.y),(float) Math.toDegrees(eulerAngles.x),(byte) 0b00111, 0, false);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, positionAndLook);
 
             Physics.simulateHelicopter(new ActiveHelicopter(helicopter));
         }
