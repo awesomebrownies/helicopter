@@ -54,7 +54,7 @@ public class ActiveHelicopter {
         body.customName(Component.text("helicopter"));
         activeHelicopters.put(body.getEntityId(), this);
 
-        ItemDisplay rotor = initializePart(attackAngle, location, Material.RABBIT_FOOT, new Vector(-0.53f, 3.25f, -4f));
+        ItemDisplay rotor = initializePart(attackAngle, location, Material.RABBIT_FOOT, new Vector(-0.53f, 3.6f, -4f));
 
         TextDisplay display = initializeDisplay(attackAngle, location, new Vector(0.25, 0.9, -1.1));
 
@@ -83,7 +83,7 @@ public class ActiveHelicopter {
         display.setTransformation(displayTransformation);
 
         display.setShadowed(true);
-        display.text(Component.text("--0%").color(TextColor.color(20,255,40)));
+        display.text(Component.text("--0%").color(TextColor.color(150,255,150)));
         display.setBackgroundColor(Color.fromARGB(0));
 
         return display;
@@ -130,7 +130,7 @@ public class ActiveHelicopter {
     public Entity[] getEntitiesBase(){
         return entitiesBase;
     }
-    public double getRPM(){
+    public float getRPM(){
         return rpm;
     }
     public void setRPM(float rpm){

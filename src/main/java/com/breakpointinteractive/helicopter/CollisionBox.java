@@ -1,8 +1,6 @@
 package com.breakpointinteractive.helicopter;
 
 import org.bukkit.*;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -35,91 +33,18 @@ public class CollisionBox {
         return rightTopBackward;
     }
 
-    public LinkedList<Vector3f> getForwardFace(Location location, Quaternionf quaternion, int height, int width){
+    public LinkedList<Vector3f> getFace(Location location, int length, int secondLength, Vector3f vector, Vector3f secondVector){
         LinkedList<Vector3f> linkedList = new LinkedList<>();
-        Vector3f upVector = getTopVector(quaternion);
-        Vector3f rightVector = getRightVector(quaternion);
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < width; j++){
+        for(int i = 0; i < length; i++){
+            for(int j = 0; j < secondLength; j++){
                 Location newLocation = location.clone()
-                        .add(Vector.fromJOML(upVector).multiply(i))
-                        .add(Vector.fromJOML(rightVector).multiply(j));
+                        .add(Vector.fromJOML(vector).multiply(i))
+                        .add(Vector.fromJOML(secondVector).multiply(j));
                 linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
             }
         }
         return linkedList;
     }
-    public LinkedList<Vector3f> getBackwardFace(Location location, Quaternionf quaternion, int height, int width){
-        LinkedList<Vector3f> linkedList = new LinkedList<>();
-        Vector3f upVector = getTopVector(quaternion);
-        Vector3f rightVector = getRightVector(quaternion);
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < width; j++){
-                Location newLocation = location.clone()
-                        .subtract(Vector.fromJOML(upVector).multiply(i))
-                        .subtract(Vector.fromJOML(rightVector).multiply(j));
-                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
-            }
-        }
-        return linkedList;
-    }
-    public LinkedList<Vector3f> getLeftFace(Location location, Quaternionf quaternion, int height, int depth){
-        LinkedList<Vector3f> linkedList = new LinkedList<>();
-        Vector3f upVector = getTopVector(quaternion);
-        Vector3f forwardVector = getForwardVector(quaternion);
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < depth; j++){
-                Location newLocation = location.clone()
-                        .add(Vector.fromJOML(upVector).multiply(i))
-                        .subtract(Vector.fromJOML(forwardVector).multiply(j));
-                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
-            }
-        }
-        return linkedList;
-    }
-    public LinkedList<Vector3f> getRightFace(Location location, Quaternionf quaternion, int height, int depth){
-        LinkedList<Vector3f> linkedList = new LinkedList<>();
-        Vector3f upVector = getTopVector(quaternion);
-        Vector3f forwardVector = getForwardVector(quaternion);
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < depth; j++){
-                Location newLocation = location.clone()
-                        .subtract(Vector.fromJOML(upVector).multiply(i))
-                        .add(Vector.fromJOML(forwardVector).multiply(j));
-                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
-            }
-        }
-        return linkedList;
-    }
-    public LinkedList<Vector3f> getTopFace(Location location, Quaternionf quaternion, int width, int depth){
-        LinkedList<Vector3f> linkedList = new LinkedList<>();
-        Vector3f rightVector = getRightVector(quaternion);
-        Vector3f forwardVector = getForwardVector(quaternion);
-        for(int i = 0; i < width; i++){
-            for(int j = 0; j < depth; j++){
-                Location newLocation = location.clone()
-                        .subtract(Vector.fromJOML(rightVector).multiply(i))
-                        .add(Vector.fromJOML(forwardVector).multiply(j));
-                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
-            }
-        }
-        return linkedList;
-    }
-    public LinkedList<Vector3f> getBottomFace(Location location, Quaternionf quaternion, int width, int depth){
-        LinkedList<Vector3f> linkedList = new LinkedList<>();
-        Vector3f rightVector = getRightVector(quaternion);
-        Vector3f forwardVector = getForwardVector(quaternion);
-        for(int i = 0; i < width; i++){
-            for(int j = 0; j < depth; j++){
-                Location newLocation = location.clone()
-                        .add(Vector.fromJOML(rightVector).multiply(i))
-                        .subtract(Vector.fromJOML(forwardVector).multiply(j));
-                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
-            }
-        }
-        return linkedList;
-    }
-
     public static Vector3f getForwardVector(Quaternionf quaternion){
         return quaternion.transformUnit(new Vector3f(0,0,1));
     }

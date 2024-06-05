@@ -19,7 +19,6 @@ public class CameraHandler implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
-        Bukkit.broadcastMessage("joined");
         trackPlayer(player);
     }
 

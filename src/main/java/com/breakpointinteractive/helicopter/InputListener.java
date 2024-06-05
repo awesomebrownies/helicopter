@@ -33,10 +33,9 @@ public class InputListener implements Listener, PacketListener {
 
             Vector3f eulerAngles = new Vector3f();
             helicopter.getTransformation().getLeftRotation().getEulerAnglesYXZ(eulerAngles);
-
             WrapperPlayServerPlayerPositionAndLook positionAndLook =
                     new WrapperPlayServerPlayerPositionAndLook(0,0,0,
-                            (float) Math.toDegrees(eulerAngles.y),(float) Math.toDegrees(eulerAngles.x),(byte) 0b00111, 0, false);
+                            (float) Math.toDegrees(eulerAngles.y+eulerAngles.z),(float) Math.toDegrees(eulerAngles.x),(byte) 0b00111, 0, false);
             PacketEvents.getAPI().getPlayerManager().sendPacket(player, positionAndLook);
 
             if(!ActiveHelicopter.getActiveHelicopters().containsKey(event.getRightClicked().getEntityId())){
