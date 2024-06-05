@@ -25,20 +25,20 @@ public class CollisionBox {
         return (int) (rightTopBackward.x()-leftBottomForward.x());
     }
     public int getDepth(){
-        return (int) (rightTopBackward.z()-leftBottomForward.z());
+        return (int) (leftBottomForward.z()-rightTopBackward.z());
     }
 
     public Vector3f getLeftBottomForward(){
         return leftBottomForward;
     }
+    public Vector3f getRightTopBackward(){
+        return rightTopBackward;
+    }
 
     public LinkedList<Vector3f> getForwardFace(Location location, Quaternionf quaternion, int height, int width){
         LinkedList<Vector3f> linkedList = new LinkedList<>();
-
         Vector3f upVector = getTopVector(quaternion);
         Vector3f rightVector = getRightVector(quaternion);
-        Vector3f forwardVector = getForwardVector(quaternion);
-
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
                 Location newLocation = location.clone()
@@ -47,44 +47,77 @@ public class CollisionBox {
                 linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
             }
         }
-
         return linkedList;
-
-
-        //Vector3f rightTopForward = new Vector3f(rightTopBackward.x(), rightTopBackward.y(), leftBottomForward.z());
-        //CollisionBox collisionBox = new CollisionBox(leftBottomForward, rightTopForward);
-        //collisionBox.transformUnit(quaternion);
-        //return collisionBox;
     }
-    public CollisionBox getBackwardFace(Quaternionf quaternion){
-        Vector3f leftBottomBackward = new Vector3f(leftBottomForward.x(), leftBottomForward.y(), rightTopBackward.z());
-        CollisionBox collisionBox = new CollisionBox(leftBottomBackward, rightTopBackward);
-        collisionBox.transformUnit(quaternion);
-        return collisionBox;
+    public LinkedList<Vector3f> getBackwardFace(Location location, Quaternionf quaternion, int height, int width){
+        LinkedList<Vector3f> linkedList = new LinkedList<>();
+        Vector3f upVector = getTopVector(quaternion);
+        Vector3f rightVector = getRightVector(quaternion);
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < width; j++){
+                Location newLocation = location.clone()
+                        .subtract(Vector.fromJOML(upVector).multiply(i))
+                        .subtract(Vector.fromJOML(rightVector).multiply(j));
+                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
+            }
+        }
+        return linkedList;
     }
-    public CollisionBox getLeftFace(Quaternionf quaternion){
-        Vector3f leftTopBackward = new Vector3f(leftBottomForward.x(), rightTopBackward.y(), rightTopBackward.z());
-        CollisionBox collisionBox = new CollisionBox(leftBottomForward, leftTopBackward);
-        collisionBox.transformUnit(quaternion);
-        return collisionBox;
+    public LinkedList<Vector3f> getLeftFace(Location location, Quaternionf quaternion, int height, int depth){
+        LinkedList<Vector3f> linkedList = new LinkedList<>();
+        Vector3f upVector = getTopVector(quaternion);
+        Vector3f forwardVector = getForwardVector(quaternion);
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < depth; j++){
+                Location newLocation = location.clone()
+                        .add(Vector.fromJOML(upVector).multiply(i))
+                        .subtract(Vector.fromJOML(forwardVector).multiply(j));
+                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
+            }
+        }
+        return linkedList;
     }
-    public CollisionBox getRightFace(Quaternionf quaternion){
-        Vector3f rightBottomForward = new Vector3f(rightTopBackward.x(), leftBottomForward.y(), leftBottomForward.z());
-        CollisionBox collisionBox = new CollisionBox(rightBottomForward, rightTopBackward);
-        collisionBox.transformUnit(quaternion);
-        return collisionBox;
+    public LinkedList<Vector3f> getRightFace(Location location, Quaternionf quaternion, int height, int depth){
+        LinkedList<Vector3f> linkedList = new LinkedList<>();
+        Vector3f upVector = getTopVector(quaternion);
+        Vector3f forwardVector = getForwardVector(quaternion);
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < depth; j++){
+                Location newLocation = location.clone()
+                        .subtract(Vector.fromJOML(upVector).multiply(i))
+                        .add(Vector.fromJOML(forwardVector).multiply(j));
+                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
+            }
+        }
+        return linkedList;
     }
-    public CollisionBox getTopFace(Quaternionf quaternion){
-        Vector3f leftTopForward = new Vector3f(leftBottomForward.x(), rightTopBackward.y(), leftBottomForward.z());
-        CollisionBox collisionBox = new CollisionBox(leftTopForward, rightTopBackward);
-        collisionBox.transformUnit(quaternion);
-        return collisionBox;
+    public LinkedList<Vector3f> getTopFace(Location location, Quaternionf quaternion, int width, int depth){
+        LinkedList<Vector3f> linkedList = new LinkedList<>();
+        Vector3f rightVector = getRightVector(quaternion);
+        Vector3f forwardVector = getForwardVector(quaternion);
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < depth; j++){
+                Location newLocation = location.clone()
+                        .subtract(Vector.fromJOML(rightVector).multiply(i))
+                        .add(Vector.fromJOML(forwardVector).multiply(j));
+                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
+            }
+        }
+        return linkedList;
     }
-    public CollisionBox getBottomFace(Quaternionf quaternion){
-        Vector3f rightBottomBackward = new Vector3f(rightTopBackward.x(), leftBottomForward.y(), rightTopBackward.z());
-        CollisionBox collisionBox = new CollisionBox(leftBottomForward, rightBottomBackward);
-        collisionBox.transformUnit(quaternion);
-        return collisionBox;
+    public LinkedList<Vector3f> getBottomFace(Location location, Quaternionf quaternion, int width, int depth){
+        LinkedList<Vector3f> linkedList = new LinkedList<>();
+        Vector3f rightVector = getRightVector(quaternion);
+        Vector3f forwardVector = getForwardVector(quaternion);
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < depth; j++){
+                Location newLocation = location.clone()
+                        .add(Vector.fromJOML(rightVector).multiply(i))
+                        .subtract(Vector.fromJOML(forwardVector).multiply(j));
+                linkedList.add(new Vector3f((float) newLocation.getX(), (float)newLocation.getY(), (float)newLocation.getZ()));
+            }
+        }
+        return linkedList;
     }
 
     public static Vector3f getForwardVector(Quaternionf quaternion){

@@ -1,0 +1,15 @@
+[
+  {
+    "user": {
+      "type": "player",
+      "name": "awesomebrownies",
+      "uniqueId": "af03ba29-a0bd-3df7-ae75-e1e1b4a5a21a"
+    },
+    "time": 1717538231341,
+    "type": "Profiler (live)",
+    "data": {
+      "type": "url",
+      "value": "https://spark.lucko.me/PVkE1U3kGv"
+    }
+  }
+]

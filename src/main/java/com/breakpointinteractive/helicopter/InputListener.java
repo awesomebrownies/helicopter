@@ -39,7 +39,9 @@ public class InputListener implements Listener, PacketListener {
                             (float) Math.toDegrees(eulerAngles.y),(float) Math.toDegrees(eulerAngles.x),(byte) 0b00111, 0, false);
             PacketEvents.getAPI().getPlayerManager().sendPacket(player, positionAndLook);
 
-            Physics.simulateHelicopter(new ActiveHelicopter(helicopter));
+            if(!ActiveHelicopter.getActiveHelicopters().containsKey(event.getRightClicked().getEntityId())){
+                Physics.simulateHelicopter(new ActiveHelicopter(helicopter));
+            }
         }
     }
 

@@ -4,10 +4,14 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.SoundStop;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.RelativeMovement;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.entity.Entity;
@@ -27,6 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Physics {
     public static void simulateHelicopter(ActiveHelicopter helicopter){
@@ -38,13 +43,18 @@ public class Physics {
         }
         final Player player = playerChecker;
 
+        AtomicInteger count = new AtomicInteger(0);
+
         new BukkitRunnable(){
             @Override
             public void run(){
                 if(helicopter.getEntitiesBase()[0].getPassengers().size() != 4 && helicopter.getIsGrounded()){
                     cancel();
                     ActiveHelicopter.getActiveHelicopters().remove(helicopter.getEntitiesBase()[0].getEntityId());
+                    helicopter.getEntitiesBase()[0].getWorld().stopSound(SoundStop.named(Key.key("helicopter", "helicopter")));
                     return;
+                }if(count.getAndAdd(1) % 198 == 0){
+                    helicopter.getEntitiesBase()[1].getWorld().playSound(Sound.sound(Key.key("helicopter", "helicopter"), Sound.Source.AMBIENT, 5, 1), helicopter.getEntitiesBase()[0]);
                 }
 
                 if(helicopter.getEntitiesBase()[0].getPassengers().size() == 4){
@@ -59,11 +69,15 @@ public class Physics {
     }
 
     private static void simulatePhysics(ActiveHelicopter helicopter){
+        if(helicopter.getRPM() < 258){
+            helicopter.setRPM((float) (helicopter.getRPM() + 1));
+        }
+
         ItemDisplay body = (ItemDisplay) helicopter.getEntitiesBase()[0];
         Quaternionf bodyRotation = body.getTransformation().getLeftRotation();
         Vector3f direction = new Vector3f(0, 1, 0);
         bodyRotation.transformUnit(direction);
-        direction.mul((float) (helicopter.getCollective()/2400.));
+        direction.mul((float) (helicopter.getCollective()/2400.*helicopter.getRPM()/258));
 
         helicopter.getVelocity().add(Vector.fromJOML(direction)).subtract(new Vector(0, 9.8/400, 0));
 
@@ -77,6 +91,10 @@ public class Physics {
             helicopter.getVelocity().setX(helicopter.getVelocity().getX()*inverseSquareRoot*20);
             helicopter.getVelocity().setY(helicopter.getVelocity().getY()*inverseSquareRoot*20);
             helicopter.getVelocity().setZ(helicopter.getVelocity().getZ()*inverseSquareRoot*20);
+        }else{
+            helicopter.getVelocity().setX(helicopter.getVelocity().getX() * 0.995);
+            helicopter.getVelocity().setY(helicopter.getVelocity().getY() * 0.995);
+            helicopter.getVelocity().setZ(helicopter.getVelocity().getZ() * 0.995);
         }
 
         WrapperPlayServerEntityMetadata positionRotationInterpolation = new WrapperPlayServerEntityMetadata(body.getEntityId(), List.of(new EntityData(10, EntityDataTypes.INT, 1)));
@@ -87,22 +105,47 @@ public class Physics {
         }
 
         HashSet<Vector3f> blockLocation = new HashSet<>();
-        CollisionBox defaultBox = new CollisionBox(new Vector3f(-1.5f,-1,2), new Vector3f(1.5f,3,-5));
+        CollisionBox defaultBox = new CollisionBox(new Vector3f(-1.5f,-1,2), new Vector3f(1.5f,3,-14));
 
-        CollisionBox collisionBox = new CollisionBox(new Vector3f(-1.5f,-1,2), new Vector3f(1.5f,3,-5));
+        CollisionBox collisionBox = new CollisionBox(new Vector3f(-1.5f,-1,2), new Vector3f(1.5f,3,-14));
         collisionBox.transformUnit(bodyRotation);
 
-        Vector3f helicopterMovementVector = helicopter.getVelocity().toVector3f();
 
-        LinkedList<Vector3f> list = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation()
-                .add(Vector.fromJOML(collisionBox.getLeftBottomForward())), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
-        blockLocation.addAll(list);
+        Vector3f forwardVector = CollisionBox.getForwardVector(bodyRotation);
+        Vector3f rightVector = CollisionBox.getRightVector(bodyRotation);
+        Vector3f topVector = CollisionBox.getTopVector(bodyRotation);
+
+        if(helicopter.getVelocity().dot(Vector.fromJOML(forwardVector)) > 0){
+            LinkedList<Vector3f> forwardFace = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation()
+                    .add(Vector.fromJOML(collisionBox.getLeftBottomForward())), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
+            blockLocation.addAll(forwardFace);
+        }else{
+            LinkedList<Vector3f> backwardFace = collisionBox.getForwardFace(helicopter.getEntitiesBase()[0].getLocation()
+                    .add(Vector.fromJOML(collisionBox.getRightTopBackward())), bodyRotation, defaultBox.getHeight(), defaultBox.getWidth());
+            blockLocation.addAll(backwardFace);
+        }
+
+        if(helicopter.getVelocity().dot(Vector.fromJOML(rightVector)) > 0) {
+            LinkedList<Vector3f> rightFace = collisionBox.getRightFace(helicopter.getEntitiesBase()[0].getLocation()
+                    .add(Vector.fromJOML(collisionBox.getRightTopBackward())), bodyRotation, defaultBox.getHeight(), defaultBox.getDepth());
+            blockLocation.addAll(rightFace);
+        }else{
+            LinkedList<Vector3f> leftFace = collisionBox.getLeftFace(helicopter.getEntitiesBase()[0].getLocation()
+                    .add(Vector.fromJOML(collisionBox.getLeftBottomForward())), bodyRotation, defaultBox.getHeight(), defaultBox.getDepth());
+            blockLocation.addAll(leftFace);
+        }
+
+        if(helicopter.getVelocity().dot(Vector.fromJOML(topVector)) > 0) {
+            LinkedList<Vector3f> topFace = collisionBox.getTopFace(helicopter.getEntitiesBase()[0].getLocation()
+                    .add(Vector.fromJOML(collisionBox.getRightTopBackward())), bodyRotation, defaultBox.getWidth(), defaultBox.getDepth());
+            blockLocation.addAll(topFace);
+        }else {
+            LinkedList<Vector3f> bottomFace = collisionBox.getBottomFace(helicopter.getEntitiesBase()[0].getLocation()
+                    .add(Vector.fromJOML(collisionBox.getLeftBottomForward())), bodyRotation, defaultBox.getWidth(), defaultBox.getDepth());
+            blockLocation.addAll(bottomFace);
+        }
 
         World world = helicopter.getEntitiesBase()[0].getLocation().getWorld();
-
-        Vector3f upVector = CollisionBox.getTopVector(bodyRotation);
-        Vector3f rightVector = CollisionBox.getRightVector(bodyRotation);
-        Vector3f forwardVector = CollisionBox.getForwardVector(bodyRotation);
 
         Vector nudge = new Vector();
 
@@ -113,51 +156,47 @@ public class Physics {
             if(block.getType().isSolid() && !helicopter.getVelocity().isZero()){
                 isGrounded = true;
 
-                Location rayTracePosition = location.clone().subtract(helicopter.getVelocity().clone().normalize().multiply(0.5));
+                Location rayTracePosition = location.clone().subtract(helicopter.getVelocity().clone().normalize());
 
                 RayTraceResult rayTrace = block.rayTrace(rayTracePosition,
-                        helicopter.getVelocity(), 2, FluidCollisionMode.NEVER);
+                        helicopter.getVelocity(), 1, FluidCollisionMode.NEVER);
                 //additional check: if there is a solid block after adding the face vector and retrieving,
                 //then raycast by that instead
                 if(rayTrace != null){
                     Block newBlock = block.getLocation().add(rayTrace.getHitBlockFace().getDirection()).getBlock();
                     if(newBlock.isSolid()){
-                        rayTrace = newBlock.rayTrace(rayTracePosition,
+                        RayTraceResult secondRayTrace = newBlock.rayTrace(rayTracePosition,
                                 helicopter.getVelocity(), 2, FluidCollisionMode.NEVER);
-                        block = newBlock;
+                        if(secondRayTrace != null && !newBlock.getLocation().add(secondRayTrace.getHitBlockFace().getDirection()).getBlock().isSolid()){
+                            rayTrace = secondRayTrace;
+                            block = newBlock;
+                        }else{
+                            rayTrace = null;
+                        }
                     }
                 }
 
                 if(rayTrace != null && rayTracePosition.getBlock() != block){ //to make sure the raytrace isn't inside the block
                     Vector finalVector = rayTrace.getHitPosition().subtract(location.toVector());
-//                    if(Math.abs(helicopter.getVelocity().getX()+finalVector.getX()) < helicopter.getVelocity().getX() ){
-//                        helicopter.getVelocity().setX(helicopter.getVelocity().getX()+finalVector.getX());
-//                    }else{
-//                    }
-                    nudge.setX(nudge.getX()+finalVector.getX()+helicopter.getVelocity().getX());
-                    //if(nudge.getX() != 0){
+                    if(rayTrace.getHitBlockFace() != BlockFace.UP && rayTrace.getHitBlockFace() != BlockFace.DOWN){
+                        nudge.setX(nudge.getX()+finalVector.getX()+helicopter.getVelocity().getX());
                         helicopter.getVelocity().setX(0);
-                    //}
+                    }
 
 
-//                    if(Math.abs(helicopter.getVelocity().getY()+finalVector.getY()) < helicopter.getVelocity().getY() ){
-//                        helicopter.getVelocity().setY(helicopter.getVelocity().getY()+finalVector.getY());
-//                    }else{
-//                    }
-                    nudge.setY(nudge.getY()+finalVector.getY()+helicopter.getVelocity().getY());
-                    //if(nudge.getY() == 0){
+                    if(rayTrace.getHitBlockFace() == BlockFace.UP || rayTrace.getHitBlockFace() == BlockFace.DOWN){
+                        nudge.setY(nudge.getY()+finalVector.getY()+helicopter.getVelocity().getY());
                         helicopter.getVelocity().setY(0);
-                    //}
+
+                        helicopter.getVelocity().setX(helicopter.getVelocity().getX()*0.92);
+                        helicopter.getVelocity().setZ(helicopter.getVelocity().getZ()*0.92);
+                    }
 
 
-//                    if(Math.abs(helicopter.getVelocity().getZ()+finalVector.getZ()) < helicopter.getVelocity().getZ() ){
-//                        helicopter.getVelocity().setZ(helicopter.getVelocity().getZ()+finalVector.getZ());
-//                    }else{
-//                    }
-                    nudge.setZ(nudge.getZ()+finalVector.getZ()+helicopter.getVelocity().getZ());
-                    //if(nudge.getZ() == 0){
+                    if(rayTrace.getHitBlockFace() != BlockFace.UP && rayTrace.getHitBlockFace() != BlockFace.DOWN){
+                        nudge.setZ(nudge.getZ()+finalVector.getZ()+helicopter.getVelocity().getZ());
                         helicopter.getVelocity().setZ(0);
-                    //}
+                    }
                 }
             }
         }
@@ -274,7 +313,7 @@ public class Physics {
             rotorRotation.getEulerAnglesZXY(eulerAngleRotors);
             Vector3f rotatedOffset = bodyRotation.transformUnit(new Vector3f(-0.53f, 3.25f, -4f));
 
-            helicopter.setRotorYRotation(helicopter.getRotorYRotation()-100/3.3);
+            helicopter.setRotorYRotation(helicopter.getRotorYRotation()-(100/3.3*helicopter.getRPM()/258.));
             rotorRotation = bodyRotation.rotateY((float) Math.toRadians(helicopter.getRotorYRotation()));
 
 

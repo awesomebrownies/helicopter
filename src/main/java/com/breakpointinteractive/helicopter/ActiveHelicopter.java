@@ -133,6 +133,9 @@ public class ActiveHelicopter {
     public double getRPM(){
         return rpm;
     }
+    public void setRPM(float rpm){
+        this.rpm = rpm;
+    }
     public void setIsGrounded(boolean statement){
         isGrounded = statement;
     }
