@@ -7,14 +7,11 @@ plugins {
     `java-library`
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.papermc.paperweight.userdev") version "1.7.0"
+    id("io.papermc.paperweight.userdev") version "1.7.1"
 }
 
 repositories {
     mavenLocal()
-    maven {
-        url = uri("https://repo.kryptonmc.org/releases")
-    }
 
     maven {
         url = uri("https://repo.papermc.io/repository/maven-public/")

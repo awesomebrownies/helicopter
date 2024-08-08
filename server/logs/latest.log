@@ -1,199 +1,65 @@
-[12:37:09] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Remapping plugin 'plugins\helicopter-.jar'...
-[12:37:13] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Done remapping plugin 'plugins\helicopter-.jar' in 3973ms.
-[12:37:40] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
-[12:37:50] [ServerMain/INFO]: Loaded 1175 recipes
-[12:37:51] [ServerMain/INFO]: Loaded 1276 advancements
-[12:37:52] [Server thread/INFO]: Starting minecraft server version 1.20.6
-[12:37:52] [Server thread/INFO]: Loading properties
-[12:37:52] [Server thread/INFO]: This server is running Paper version 1.20.6-86-master@9bf4855 (2024-05-20T18:22:30Z) (Implementing API version 1.20.6-R0.1-SNAPSHOT)
-[12:37:57] [Server thread/INFO]: Server Ping Player Sample Count: 12
-[12:37:57] [Server thread/INFO]: Using 4 threads for Netty based IO
-[12:38:01] [Server thread/WARN]: [!] The timings profiler has been enabled but has been scheduled for removal from Paper in the future.
+[14:14:51] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Remapping plugin 'plugins/helicopter-.jar'...
+[14:14:51] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Done remapping plugin 'plugins/helicopter-.jar' in 684ms.
+[14:14:57] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[14:15:00] [ServerMain/INFO]: Loaded 1175 recipes
+[14:15:00] [ServerMain/INFO]: Loaded 1276 advancements
+[14:15:00] [Server thread/INFO]: Starting minecraft server version 1.20.6
+[14:15:00] [Server thread/INFO]: Loading properties
+[14:15:00] [Server thread/INFO]: This server is running Paper version git-Paper-70 (MC: 1.20.6) (Implementing API version 1.20.6-R0.1-SNAPSHOT) (Git: f041f48)
+[14:15:01] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[14:15:01] [Server thread/INFO]: Using 4 threads for Netty based IO
+[14:15:02] [Server thread/WARN]: [!] The timings profiler has been enabled but has been scheduled for removal from Paper in the future.
     We recommend installing the spark profiler as a replacement: https://spark.lucko.me/
     For more information please visit: https://github.com/PaperMC/Paper/issues/8948
-[12:38:01] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using 1 I/O threads, 2 worker threads, and gen parallelism of 2 threads
-[12:38:03] [Server thread/INFO]: Default game type: SURVIVAL
-[12:38:03] [Server thread/INFO]: Generating keypair
-[12:38:04] [Server thread/INFO]: Starting Minecraft server on *:25565
-[12:38:04] [Server thread/INFO]: Using default channel type
-[12:38:04] [Server thread/INFO]: Paper: Using Java compression from Velocity.
-[12:38:04] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
-[12:38:05] [Server thread/INFO]: [packetevents] Loading server plugin packetevents v2.2.1
-[12:38:40] [Server thread/INFO]: [spark] Loading server plugin spark v1.10.67
-[12:38:40] [Server thread/INFO]: [helicopter] Loading server plugin helicopter v${version}
-[12:38:40] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
-[12:38:40] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
-[12:38:40] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
-[12:38:40] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
-[12:38:40] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
-[12:38:40] [Server thread/INFO]: Preparing level "world"
-[12:38:43] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
-[12:38:48] [Server thread/INFO]: Time elapsed: 5330 ms
-[12:38:48] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
-[12:38:48] [Server thread/INFO]: Time elapsed: 579 ms
-[12:38:48] [Server thread/INFO]: [packetevents] Enabling packetevents v2.2.1
-[12:38:49] [packetevents-update-check-thread/INFO]: [packetevents] Checking for updates, please wait...
-[12:38:50] [Server thread/INFO]: [spark] Enabling spark v1.10.67
-[12:38:50] [packetevents-update-check-thread/INFO]: [packetevents] There is an update available for packetevents! Your build: (2.2.1) | Latest released build: (2.3.0)
-[12:38:55] [Server thread/INFO]: [spark] Using Paper ServerTickStartEvent for tick monitoring
-[12:38:55] [Server thread/INFO]: [spark] Starting background profiler...
-[12:38:55] [Server thread/INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows11/amd64), so the built-in Java engine will be used instead.
-[12:38:58] [Server thread/INFO]: [helicopter] Enabling helicopter v${version}
-[12:38:59] [Server thread/INFO]: Running delayed init tasks
-[12:38:59] [Server thread/INFO]: Done (66.713s)! For help, type "help"
-[12:38:59] [Server thread/INFO]: Timings Reset
-[12:39:43] [User Authenticator #0/INFO]: UUID of player awesomebrownies is af03ba29-a0bd-3df7-ae75-e1e1b4a5a21a
-[12:39:49] [Netty Server IO #1/WARN]: [com.github.retrooper.packetevents.PacketEventsAPI] No data was sent for dimension Compound{{name=String(minecraft:overworld), id=Int(0)}} to awesomebrownies
-[12:39:49] [Server thread/INFO]: awesomebrownies joined the game
-[12:39:49] [Server thread/INFO]: awesomebrownies[/127.0.0.1:53079] logged in with entity id 18 at ([world]-406.69182744709116, 70.19703396039618, -600.5283477460518)
-[12:39:52] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2500ms or 50 ticks behind
-[12:40:11] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 4083ms or 81 ticks behind
-[12:40:41] [Server thread/INFO]: BOOM
-[12:40:49] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:41:08] [Server thread/INFO]: BOOM
-[12:41:12] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:43:12] [Server thread/INFO]: awesomebrownies issued server command: /helicopter remove 277
-[12:43:14] [Server thread/INFO]: awesomebrownies issued server command: /gamemode spectator
-[12:43:14] [Server thread/INFO]: [awesomebrownies: Set own game mode to Spectator Mode]
-[12:43:20] [Server thread/INFO]: awesomebrownies issued server command: /gamemode creative
-[12:43:20] [Server thread/INFO]: [awesomebrownies: Set own game mode to Creative Mode]
-[12:43:25] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:45:02] [Server thread/INFO]: BOOM
-[12:45:06] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:45:30] [Server thread/INFO]: BOOM
-[12:45:34] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:46:12] [Server thread/INFO]: BOOM
-[12:46:16] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:46:20] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:46:22] [Server thread/INFO]: BOOM
-[12:46:25] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:46:26] [Server thread/INFO]: BOOM
-[12:46:28] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:46:30] [Server thread/INFO]: BOOM
-[12:46:32] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:46:34] [Server thread/INFO]: BOOM
-[12:46:36] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:46:37] [Server thread/INFO]: BOOM
-[12:49:28] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2593ms or 51 ticks behind
-[12:49:33] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:49:57] [Server thread/INFO]: BOOM
-[12:50:13] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 4354ms or 87 ticks behind
-[12:50:21] [Server thread/INFO]: awesomebrownies issued server command: /particle minecraft:campfire_cosy_smoke ~ ~ ~
-[12:50:21] [Server thread/INFO]: [awesomebrownies: Displaying particle minecraft:campfire_cosy_smoke]
-[12:50:43] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:50:45] [Server thread/INFO]: BOOM
-[12:50:49] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:50:50] [Server thread/INFO]: BOOM
-[12:51:47] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2756ms or 55 ticks behind
-[12:51:52] [Server thread/INFO]: BOOM
-[12:51:52] [Server thread/INFO]: BOOM
-[12:52:10] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:52:17] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3464ms or 69 ticks behind
-[12:52:38] [Server thread/INFO]: BOOM1
-[12:53:31] [Server thread/INFO]: awesomebrownies issued server command: /particle minecraft:lava ~ ~ ~
-[12:53:31] [Server thread/INFO]: [awesomebrownies: Displaying particle minecraft:lava]
-[12:53:34] [Server thread/INFO]: awesomebrownies issued server command: /particle minecraft:lava ~ ~ ~
-[12:53:34] [Server thread/INFO]: [awesomebrownies: Displaying particle minecraft:lava]
-[12:56:07] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3684ms or 73 ticks behind
-[12:56:20] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:56:26] [Server thread/INFO]: BOOM1
-[12:56:30] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 8454ms or 169 ticks behind
-[12:56:30] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:56:32] [Server thread/INFO]: BOOM1
-[12:58:05] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3086ms or 61 ticks behind
-[12:58:06] [Server thread/WARN]: awesomebrownies moved too quickly! 44.444099772133654,0.0,-8.736419909277544
-[12:58:08] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:58:10] [Server thread/INFO]: BOOM1
-[12:58:12] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:58:13] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:58:14] [Server thread/INFO]: BOOM1
-[12:58:15] [Server thread/INFO]: BOOM1
-[12:58:20] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:58:23] [Server thread/INFO]: BOOM1
-[12:58:25] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2532ms or 50 ticks behind
-[12:58:29] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[12:58:50] [Server thread/INFO]: BOOM1
-[12:58:50] [Server thread/INFO]: BOOM1
-[12:59:24] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2565ms or 51 ticks behind
-[12:59:30] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:00:01] [Server thread/INFO]: BOOM1
-[13:00:04] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2513ms or 50 ticks behind
-[13:00:27] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3792ms or 75 ticks behind
-[13:02:35] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3589ms or 71 ticks behind
-[13:03:13] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3729ms or 74 ticks behind
-[13:03:20] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:03:28] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:03:37] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:03:38] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:04:07] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:04:09] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2555ms or 51 ticks behind
-[13:04:30] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:10] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:35] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:36] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:38] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:38] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:39] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:41] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:42] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:43] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:44] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:05:51] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:07] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2545ms or 50 ticks behind
-[13:06:11] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:17] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:22] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:22] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:23] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:24] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:24] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:25] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:06:56] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:08:20] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 8160ms or 163 ticks behind
-[13:08:40] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2740ms or 54 ticks behind
-[13:10:09] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:15] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:19] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:24] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3112ms or 62 ticks behind
-[13:10:24] [Server thread/WARN]: awesomebrownies moved too quickly! -12.069339247185667,1.4950660194469805,-0.9828992116474637
-[13:10:29] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:34] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:35] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:40] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:44] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:47] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:51] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:53] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:54] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:55] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:55] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:56] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:57] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:57] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:58] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:59] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:10:59] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:00] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:00] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:04] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:05] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:05] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:06] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:06] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:07] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:07] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:08] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:08] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:09] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:17] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:18] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:20] [Server thread/INFO]: awesomebrownies issued server command: /helicopter summon default
-[13:11:48] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2800ms or 56 ticks behind
-[16:12:06] [Paper Watchdog Thread/ERROR]: ------------------------------
-[16:12:06] [Paper Watchdog Thread/ERROR]: The server has stopped responding! This is (probably) not a Paper bug.
-[16:12:06] [Paper Watchdog Thread/ERROR]: If you see a plugin in the Server thread dump below, then please report it to that author
-[16:12:06] [Paper Watchdog Thread/ERROR]: 	 *Especially* if it looks like HTTP or MySQL operations are occurring
-[16:12:06] [Paper Watchdog Thread/ERROR]: If you see a world save or edit, then it means you did far more than your server can handle at once
-[16:12:06] [Paper Watchdog Thread/ERROR]: 	 If this is the case, consider increasing timeout-time in spigot.yml but note that this will replace the crash with LARGE lag spikes
-[16:12:06] [Paper Watchdog Thread/ERROR]: If you are unsure or still think this is a Paper bug, please report this to https://github.com/PaperMC/Paper/issues
-[16:12:06] [Paper Watchdog Thread/ERROR]: Be sure to include ALL relevant console errors and Minecraft crash reports
+[14:15:02] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using 1 I/O threads, 1 worker threads, and gen parallelism of 1 threads
+[14:15:02] [Server thread/INFO]: Default game type: SURVIVAL
+[14:15:02] [Server thread/INFO]: Generating keypair
+[14:15:03] [Server thread/INFO]: Starting Minecraft server on *:25565
+[14:15:03] [Server thread/INFO]: Using epoll channel type
+[14:15:03] [Server thread/INFO]: Paper: Using libdeflate (Linux x86_64) compression from Velocity.
+[14:15:03] [Server thread/INFO]: Paper: Using OpenSSL 3.0.x (Linux x86_64) cipher from Velocity.
+[14:15:03] [Server thread/INFO]: [packetevents] Loading server plugin packetevents v2.2.1
+[14:15:08] [Server thread/INFO]: [helicopter] Loading server plugin helicopter v${version}
+[14:15:08] [Server thread/INFO]: [spark] Loading server plugin spark v1.10.67
+[14:15:08] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[14:15:08] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[14:15:08] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[14:15:08] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[14:15:08] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[14:15:08] [Server thread/INFO]: Preparing level "world"
+[14:15:08] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[14:15:09] [Server thread/INFO]: Time elapsed: 1112 ms
+[14:15:09] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[14:15:10] [Server thread/INFO]: Time elapsed: 141 ms
+[14:15:10] [Server thread/INFO]: [packetevents] Enabling packetevents v2.2.1
+[14:15:10] [packetevents-update-check-thread/INFO]: [packetevents] Checking for updates, please wait...
+[14:15:10] [packetevents-update-check-thread/INFO]: [packetevents] There is an update available for packetevents! Your build: (2.2.1) | Latest released build: (2.3.0)
+[14:15:10] [Server thread/INFO]: [helicopter] Enabling helicopter v${version}
+[14:15:10] [Server thread/INFO]: [spark] Enabling spark v1.10.67
+[14:15:11] [Server thread/INFO]: [spark] Using Paper ServerTickStartEvent for tick monitoring
+[14:15:11] [Server thread/INFO]: [spark] Starting background profiler...
+[14:15:13] [Server thread/INFO]: Running delayed init tasks
+[14:15:13] [Server thread/INFO]: Done (12.337s)! For help, type "help"
+[14:15:13] [Server thread/INFO]: Timings Reset
+[16:19:09] [Server thread/INFO]: Stopping server
+[16:19:09] [Server thread/INFO]: [spark] Disabling spark v1.10.67
+[16:19:09] [Server thread/INFO]: [helicopter] Disabling helicopter v${version}
+[16:19:09] [Server thread/INFO]: [packetevents] Disabling packetevents v2.2.1
+[16:19:09] [Server thread/INFO]: Saving players
+[16:19:09] [Server thread/INFO]: Saving worlds
+[16:19:09] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world'
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world'
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world'
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 10 entity chunks, 0 poi chunks in world 'world' in 0.03s
+[16:19:09] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[16:19:09] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_the_end]'/minecraft:the_end
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_the_end'
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_the_end'
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_the_end'
+[16:19:09] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'world_the_end' in 0.00s
+[16:19:09] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[16:19:09] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[16:19:09] [Server thread/INFO]: Flushing Chunk IO
+[16:19:09] [Server thread/INFO]: Closing Thread Pool
+[16:19:09] [Server thread/INFO]: Closing Server

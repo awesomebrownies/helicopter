@@ -2,9 +2,8 @@ package com.breakpointinteractive.helicopter;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.entity.CraftDisplay;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
@@ -14,33 +13,39 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class ActiveHelicopter {
     public static final HashMap<Integer, ActiveHelicopter> activeHelicopters = new HashMap<>();
 
     private final Vector velocity = new Vector(0,0,0);
-    private final Vector angularVelocity = new Vector(0,0,0);
-    private Quaternionf attackAngle;
     private int collective = 0;
     private double rotorYRotation;
     private float rpm = 0;
     private Entity[] entitiesBase;
-    private final Vector2f playerRotation = new Vector2f(0,0);
+    private Vector2f playerRotation = new Vector2f(0,0);
+    private Vector3f bodyRotation = new Vector3f();
     private final CollisionBox[] collisionBoxes = new CollisionBox[1];
     private boolean isGrounded;
+    private boolean isFreeLooking;
+    private Long lastRightClick = 0L;
+    private final Entity[] seats = new Entity[5];
 
-    public ActiveHelicopter(Entity helicopterBase){
+    public ActiveHelicopter(ItemDisplay helicopterBase){
         entitiesBase = new Entity[helicopterBase.getPassengers().size()];
         entitiesBase[0] = helicopterBase;
         for(int i = 1; i < helicopterBase.getPassengers().size(); i++){
             entitiesBase[i] = helicopterBase.getPassengers().get(i);
         }
+        helicopterBase.getTransformation().getLeftRotation().getEulerAnglesYXZ(bodyRotation);
+        playerRotation = new Vector2f(bodyRotation.x,bodyRotation.y);
+
         activeHelicopters.put(helicopterBase.getEntityId(), this);
     }
 
     //create instance of a helicopter and summon in necessary displays
     public ActiveHelicopter(Quaternionf attackAngle, Location location){
-        this.attackAngle = attackAngle; //starting rotation
+        attackAngle.getEulerAnglesYXZ(bodyRotation);
         initializeParts(attackAngle, location);
         Physics.simulateHelicopter(this);
     }
@@ -52,11 +57,12 @@ public class ActiveHelicopter {
         //HUD part 2
         ItemDisplay body = initializePart(attackAngle, location, Material.MELON_SEEDS, new Vector(0,0.75,0));
         body.customName(Component.text("helicopter"));
+        ((CraftDisplay) body).getHandle().getEntityData().set(net.minecraft.world.entity.Display.DATA_POS_ROT_INTERPOLATION_DURATION_ID, 1);
         activeHelicopters.put(body.getEntityId(), this);
 
-        ItemDisplay rotor = initializePart(attackAngle, location, Material.RABBIT_FOOT, new Vector(-0.53f, 3.6f, -4f));
+        ItemDisplay rotor = initializePart(attackAngle, location, Material.RABBIT_FOOT, new Vector(-0.53f, 3.25f, -4f));
 
-        TextDisplay display = initializeDisplay(attackAngle, location, new Vector(0.25, 0.9, -1.1));
+        TextDisplay display = initializeDisplay(attackAngle, location, new Vector(-0.5, 0.9, -1.1));
 
         Interaction hitbox = (Interaction) location.getWorld().spawnEntity(location, EntityType.INTERACTION);
         hitbox.setInteractionHeight(3);
@@ -83,7 +89,7 @@ public class ActiveHelicopter {
         display.setTransformation(displayTransformation);
 
         display.setShadowed(true);
-        display.text(Component.text("--0%").color(TextColor.color(150,255,150)));
+        display.text(Component.text("___%").color(TextColor.color(150,255,150)));
         display.setBackgroundColor(Color.fromARGB(0));
 
         return display;
@@ -109,17 +115,30 @@ public class ActiveHelicopter {
         return display;
     }
 
-    public Quaternionf getAttackAngle(){
-        return attackAngle;
+    public static boolean destroyParts(World world, int entityID){
+        ActiveHelicopter.getActiveHelicopters().remove(entityID);
+
+        boolean helicopterFound = false;
+        for(Entity target : world.getEntities()){
+            if(target.getEntityId() == entityID){
+                helicopterFound = true;
+                for(Entity base : target.getPassengers()){
+                    if(!(base instanceof Player)){
+                        base.remove();
+                    }
+                }
+                target.eject();
+                target.remove();
+            }else if(target.getCustomName() != null && target.getCustomName().contains(String.valueOf(entityID))){
+                target.eject();
+                target.remove();
+            }
+        }
+        return helicopterFound;
     }
-    public void setAttackAngle(Quaternionf attackAngle){
-        this.attackAngle = attackAngle;
-    }
+
     public Vector getVelocity(){
         return velocity;
-    }
-    public Vector getAngularVelocity(){
-        return angularVelocity;
     }
     public double getRotorYRotation(){
         return rotorYRotation;
@@ -142,6 +161,18 @@ public class ActiveHelicopter {
     public boolean getIsGrounded(){
         return isGrounded;
     }
+    public void setLastRightClick(Long value){
+        lastRightClick = value;
+    }
+    public Long getLastRightClick(){
+        return lastRightClick;
+    }
+    public void setFreeLooking(boolean value){
+        isFreeLooking = value;
+    }
+    public boolean isFreeLooking(){
+        return isFreeLooking;
+    }
     public int getCollective(){
         return collective;
     }
@@ -150,6 +181,15 @@ public class ActiveHelicopter {
     }
     public Vector2f getPlayerRotation(){
         return playerRotation;
+    }
+    public Vector3f getBodyRotation(){
+        return bodyRotation;
+    }
+    public void setBodyRotation(Vector3f vector3f){
+        bodyRotation = vector3f;
+    }
+    public Entity[] getSeats(){
+        return seats;
     }
     public CollisionBox[] getCollisionBoxes(){
         return collisionBoxes;

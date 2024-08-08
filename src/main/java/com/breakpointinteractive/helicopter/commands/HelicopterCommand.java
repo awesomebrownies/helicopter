@@ -2,6 +2,7 @@ package com.breakpointinteractive.helicopter.commands;
 
 import com.breakpointinteractive.helicopter.ActiveHelicopter;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,20 +33,11 @@ public class HelicopterCommand implements CommandExecutor {
                     try{
                         int entityID = Integer.parseInt(args[1]);
                         //remove active helicopter, if present
-                        ActiveHelicopter.getActiveHelicopters().remove(entityID);
-                        //remove from world, if loaded in
-                        for(Entity target : player.getWorld().getEntities()){
-                            if(target.getEntityId() == entityID && Objects.equals(target.customName(), Component.text("helicopter"))){
-                                for(Entity passenger : target.getPassengers()){
-                                    passenger.remove();
-                                }
-                                target.remove();
-                                player.sendMessage("Removed helicopter with the ID " + entityID);
-
-                                return true;
-                            }
+                        if(ActiveHelicopter.destroyParts(player.getWorld(), entityID)){
+                            player.sendMessage("Removed helicopter with the ID " + entityID);
+                        }else{
+                            player.sendMessage("There is no loaded helicopter with the ID " + entityID);
                         }
-                        player.sendMessage("There is no loaded helicopter with the ID " + entityID);
                     }catch(Exception exception){
                         player.sendMessage(args[1] + " is an Invalid ID");
                     }
